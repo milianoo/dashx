@@ -4,6 +4,12 @@
 #widgets{
     margin-top:50px;
 }
+#signature{
+  float:right;
+  width: 200px;
+  padding: 15px;
+  color: gray;
+}
 
 .widget{
     background: #eee;

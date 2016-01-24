@@ -91,6 +91,7 @@ var ControlPanel = React.createClass({
                   <ul className="nav navbar-nav">
                     <li><a href="#" onClick={this.handleClick}><i className="fa fa-plus-circle"></i> New Widget</a></li>
                   </ul>
+                  <div id="signature">By Milad Rezazadeh</div>
                 </div>
             </nav>
         );
