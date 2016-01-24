@@ -1,57 +1,106 @@
+var Config = require("./config.jsx");
+
 var Front = React.createClass({
     getInitialState: function() {
       return {html: ''}; 
     },
     componentDidMount: function(){
-        this.timer = setInterval(this.reload, 5000);
+        this.loadWidget();
     },
     displayEditMode: function() {
         this.props.edit();
     },
+    loadWidget: function() {
+        // if there is a apiUrl call it and in callback render the widget
+        // else just render the widget 
+        var widget = Config.Widgets[this.props.id];
+        var content = '';
+        if (widget.apiUrl) {
+            // call api and set content using result 
+            $.ajax({
+                url: widget.apiUrl, 
+                type: "GET",   
+                dataType: 'jsonp',
+                cache: false,
+                success: function(response){                          
+                    content = widget.render(response);
+                    this.setState({html: <div>{content}</div>});
+                }.bind(this)         
+            });
+            
+        }else{
+            content = widget.render();
+            this.setState({html: <div>{content}</div>});
+        }
+    },
     reload: function() {
         console.log(this.props.id + ' called !');
         
-        this.setState({html: <div><h1>Widget {this.props.id}</h1><p>The content will aprear here</p></div>});
+        this.loadWidget();
     },
     render: function() {
-        return (<div className="front tile">
+        clearInterval(this.timer);
+        this.timer = setInterval(this.reload, this.props.setting.interval);
+        
+        return (<div style={this.props.setting.style} className="front tile">
                     <div className="settingButton" onClick={this.displayEditMode}>
                         <span className="glyphicon glyphicon-cog"></span>
                         <span className="title"> Setting</span>
                     </div>
-                <a>{this.props.setting.apiUrl}</a>
                 {this.state.html}
             </div>);
     }
 });
 
 var Back = React.createClass({
+     getInitialState: function() {
+        var widget = Config.Widgets[this.props.id];
+        return {
+            widget: widget
+        };
+    },
     saveSetting: function(){
         var apiUrl = ReactDOM.findDOMNode(this.refs.apiUrl);
-
+        var css = ReactDOM.findDOMNode(this.refs.css);
+        var interval = ReactDOM.findDOMNode(this.refs.interval);
+        
         var setting = {
-            apiUrl: apiUrl.value
+            apiUrl: apiUrl.value,
+            style: JSON.parse(css.value),
+            interval: interval.value
         }
         this.props.save(setting);
     },
     render: function() {
         return (<div className="back tile text-center">
-                    <h3>Setting</h3>
-                    <input placeholder="API URL" ref="apiUrl" />
-                    <button onClick={this.saveSetting}>Save</button>
+                    <div className="form-group">
+                        <label>API Url</label>
+                        <input className="form-control" placeholder="API URL" ref="apiUrl" defaultValue={this.state.widget.apiUrl} />
+                        <label>Style</label>
+                        <input className="form-control" placeholder="CSS" ref="css" defaultValue={JSON.stringify(this.state.widget.style)} />
+                        <label>Interval</label>
+                        <input className="form-control" placeholder="Interval" ref="interval" defaultValue={this.state.widget.interval} />
+                    </div> 
+                    <button className="btn btn-default" onClick={this.saveSetting}>Save</button>
                 </div>);
     }
 });
 
 var Widget = React.createClass({
     getInitialState: function() {
+        var widget = Config.Widgets[this.props.id];
+        var setting = {
+            apiUrl: widget.apiUrl,
+            style: widget.style,
+            interval: widget.interval
+        }
+        
         return {
             flipped: false,
-            setting : {}
+            setting : setting
         };
     },
     updateWidgetSetting: function (setting){
-        console.log("url" + setting.apiUrl);
         this.setState({setting: setting});
         this.viewWidgetSetting();
     },
@@ -62,12 +111,11 @@ var Widget = React.createClass({
         this.setState({flipped: !this.state.flipped});
     },
     render: function() {
-        console.log(this.props.id);
         return (
             <div className="widget col-md-3 flipper-container horizontal" flipped={this.state.flipped}>
                 <div className={"flipper" + (this.state.flipped ? " flipped" : "")}>
                     <Front setting={this.state.setting} edit={this.viewWidgetSetting} id={this.props.id}>the front!</Front>
-                    <Back setting={this.state.setting} save={this.updateWidgetSetting}></Back>
+                    <Back setting={this.state.setting} save={this.updateWidgetSetting} id={this.props.id}></Back>
                 </div>
             </div>
             );

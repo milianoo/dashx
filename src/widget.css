@@ -17,6 +17,10 @@
     overflow: hidden;
 }
 
+.carousel-content {
+    padding: 15px;
+}
+
 .settingButton .title{
   transition:opacity 0.5s linear;
   opacity:0;
