@@ -1,0 +1,27 @@
+{
+  "name": "dashx",
+  "version": "1.0.0",
+  "authors": [
+    "Milad Rezazadeh <me@miladrk.com>"
+  ],
+  "description": "a dashboard library using node.js and react.js",
+  "main": "./src/index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "bower-components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.14.6",
+    "jquery": "~2.2.0",
+    "bootstrap": "~3.3.6",
+    "font-awesome": "fontawesome#~4.5.0"
+  }
+}
