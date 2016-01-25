@@ -3,6 +3,10 @@ DashX - A Node.js Dashboard
 
 This module is under development. For any question please email me@miladrk.com
 
+
+![alt tag](http://g.recordit.co/8THUuL8bVT.gif)
+
+
 Steps to setup and use the tool :
 
 1. get the source from git 
@@ -41,6 +45,7 @@ Iteration 2
 3. load widget UI from template
 4. setup config file for each widget
 5. enhance UI of widget 
+
 
 iteration 3
 ===========
