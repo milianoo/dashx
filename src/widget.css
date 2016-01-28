@@ -1,8 +1,41 @@
+.example-appear {
+  opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+body {
+  height:100%;
+}
 #dashboard{
   padding-left:10px;
+  height: 100vh;
+  background: gray;
 }
 #widgets{
     margin-top:50px;
+    height:100%;
 }
 #signature{
   float:right;
@@ -12,7 +45,7 @@
 }
 
 .widget{
-    background: #eee;
+    background: #222;
     padding:5px !important;
     overflow: hidden;
 }
@@ -49,7 +82,7 @@ input, button{
 }
 .flipper-container {
   float: left;
-  height: 250px;
+  height: 25%;
   display: block;
   perspective: 1000px;
   -webkit-perspective: 1000px;

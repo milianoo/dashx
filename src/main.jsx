@@ -1,4 +1,17 @@
 var Config = require("./config.jsx");
+var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+
+var TextControl = React.createClass({
+    getInitialState: function() {
+      return {html: ''}; 
+    },
+    render: function() {
+        return (<div>
+                    <h3>{this.props.title}</h3>
+                    <p>{this.props.value}</p>
+                </div>);
+    }
+});
 
 var Front = React.createClass({
     getInitialState: function() {
@@ -34,21 +47,28 @@ var Front = React.createClass({
         }
     },
     reload: function() {
-        console.log(this.props.id + ' called !');
+        var id = "widget_" + this.props.id;
+        console.log(id + ' called !');
         
+        $('#'+id).addClass('animated flash');
+        $('#'+id).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+            $('#'+id).removeClass('animated flash');
+        });
         this.loadWidget();
     },
     render: function() {
         clearInterval(this.timer);
         this.timer = setInterval(this.reload, this.props.setting.interval);
-        
+        var id = "widget_" + this.props.id;
         return (<div style={this.props.setting.style} className="front tile">
                     <div className="settingButton" onClick={this.displayEditMode}>
                         <span className="glyphicon glyphicon-cog"></span>
                         <span className="title"> Setting</span>
                     </div>
-                {this.state.html}
-            </div>);
+                    <div id={id}>
+                        {this.state.html}
+                    </div>
+                </div>);
     }
 });
 
@@ -111,13 +131,12 @@ var Widget = React.createClass({
         this.setState({flipped: !this.state.flipped});
     },
     render: function() {
-        return (
-            <div className="widget col-md-3 flipper-container horizontal" flipped={this.state.flipped}>
-                <div className={"flipper" + (this.state.flipped ? " flipped" : "")}>
-                    <Front setting={this.state.setting} edit={this.viewWidgetSetting} id={this.props.id}>the front!</Front>
-                    <Back setting={this.state.setting} save={this.updateWidgetSetting} id={this.props.id}></Back>
-                </div>
-            </div>
+        return ( <div className="widget col-md-3 flipper-container horizontal" flipped={this.state.flipped}>
+                        <div className={"flipper" + (this.state.flipped ? " flipped" : "")}>
+                            <Front setting={this.state.setting} edit={this.viewWidgetSetting} id={this.props.id}>the front!</Front>
+                            <Back setting={this.state.setting} save={this.updateWidgetSetting} id={this.props.id}></Back>
+                        </div>
+                    </div>
             );
     }
 });

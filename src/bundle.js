@@ -45,6 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Config = __webpack_require__(1);
+	var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 	var Front = React.createClass({
 	    displayName: 'Front',
@@ -89,14 +90,19 @@
 	        }
 	    },
 	    reload: function () {
-	        console.log(this.props.id + ' called !');
+	        var id = "widget_" + this.props.id;
+	        console.log(id + ' called !');
 
+	        $('#' + id).addClass('animated flash');
+	        $('#' + id).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+	            $('#' + id).removeClass('animated flash');
+	        });
 	        this.loadWidget();
 	    },
 	    render: function () {
 	        clearInterval(this.timer);
 	        this.timer = setInterval(this.reload, this.props.setting.interval);
-
+	        var id = "widget_" + this.props.id;
 	        return React.createElement(
 	            'div',
 	            { style: this.props.setting.style, className: 'front tile' },
@@ -110,7 +116,11 @@
 	                    ' Setting'
 	                )
 	            ),
-	            this.state.html
+	            React.createElement(
+	                'div',
+	                { id: id },
+	                this.state.html
+	            )
 	        );
 	    }
 	});
