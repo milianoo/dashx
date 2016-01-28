@@ -1,4 +1,4 @@
-DashX - A Node.js Dashboard
+DashX - A Node.js/ReactJS Dashboard
 ---------------------------
 
 This module is under development. For any question please email me@miladrk.com
