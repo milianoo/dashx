@@ -56,6 +56,20 @@ iteration 3
 4. generate new widget using grunt 
 5. load widgets on load from config file
 
+iteration 4
+===========
+
+1. save config files in database
+2. easier connection to social networks (oauth 2.0 required)
+3. display data from other social networks as widgets 
+
+iteration 5
+===========
+
+1. dashboard as a service
+2. single config file for each dashboard
+3. generate individual url for each dashboard 
+
 
 # License
 
