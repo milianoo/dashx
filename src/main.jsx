@@ -1,13 +1,10 @@
 var Config = require("./config.jsx");
+
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 var TextControl = React.createClass({
-    getInitialState: function() {
-      return {html: ''}; 
-    },
     render: function() {
         return (<div>
-                    <h3>{this.props.title}</h3>
                     <p>{this.props.value}</p>
                 </div>);
     }
@@ -15,7 +12,7 @@ var TextControl = React.createClass({
 
 var Front = React.createClass({
     getInitialState: function() {
-      return {html: ''}; 
+      return {controls: [], name: ''}; 
     },
     componentDidMount: function(){
         this.loadWidget();
@@ -26,25 +23,34 @@ var Front = React.createClass({
     loadWidget: function() {
         // if there is a apiUrl call it and in callback render the widget
         // else just render the widget 
+        
         var widget = Config.Widgets[this.props.id];
-        var content = '';
-        if (widget.apiUrl) {
-            // call api and set content using result 
-            $.ajax({
-                url: widget.apiUrl, 
-                type: "GET",   
-                dataType: 'jsonp',
-                cache: false,
-                success: function(response){                          
-                    content = widget.render(response);
-                    this.setState({html: <div>{content}</div>});
-                }.bind(this)         
-            });
+        this.setState({name: widget.name});
+        
+        widget.render(function(content){
             
-        }else{
-            content = widget.render();
-            this.setState({html: <div>{content}</div>});
-        }
+            var controls = [];
+            
+            if (typeof content === 'object' || typeof content === 'array') {
+                
+                content.map(function(data, i){
+                    
+                    var dataContent = data[widget.data.dataFieldName];
+                    
+                    var control = {content: dataContent, type: widget.data.displayType};
+                    
+                    controls.push(control);
+                });
+            }else{
+                var control = {content: content, type: 'text'};
+                
+                controls.push(control);
+            }
+            
+            this.setState({controls: controls});
+            
+        }.bind(this));
+        
     },
     reload: function() {
         var id = "widget_" + this.props.id;
@@ -65,8 +71,22 @@ var Front = React.createClass({
                         <span className="glyphicon glyphicon-cog"></span>
                         <span className="title"> Setting</span>
                     </div>
+                    <div>
+                        <h3>{this.state.name}</h3>
+                    </div>
                     <div id={id}>
-                        {this.state.html}
+                    {this.state.controls.map(function(control, i){
+                        switch (control.displayType) {
+                            case 'text':
+                                return <TextControl key={i} value={control.content} />
+                                break;
+                            
+                            default:
+                                return <TextControl key={i} value={control.content} />
+                        }
+                        
+                        
+                    })}
                     </div>
                 </div>);
     }
@@ -131,9 +151,9 @@ var Widget = React.createClass({
         this.setState({flipped: !this.state.flipped});
     },
     render: function() {
-        return ( <div className="widget col-md-3 flipper-container horizontal" flipped={this.state.flipped}>
+        return ( <div className="widget col-md-3 flipper-container horizontal">
                         <div className={"flipper" + (this.state.flipped ? " flipped" : "")}>
-                            <Front setting={this.state.setting} edit={this.viewWidgetSetting} id={this.props.id}>the front!</Front>
+                            <Front setting={this.state.setting} edit={this.viewWidgetSetting} id={this.props.id}></Front>
                             <Back setting={this.state.setting} save={this.updateWidgetSetting} id={this.props.id}></Back>
                         </div>
                     </div>
@@ -143,9 +163,6 @@ var Widget = React.createClass({
 
 var ControlPanel = React.createClass({
     handleClick: function(e) {
-        // e.preventDefault();
-        // var widgetName = ReactDOM.findDOMNode(this.refs.widgetName);
-        // add widget to dashboard 
         this.props.addWidget();
     },
     render: function() {
@@ -168,7 +185,7 @@ var ControlPanel = React.createClass({
 
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {widgets: []};
+        return {widgets: Config.Widgets};
     },
     addWidget: function(widgetToAdd) {
         this.setState({widgets: this.state.widgets.concat(widgetToAdd)});

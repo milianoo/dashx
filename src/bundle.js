@@ -45,13 +45,30 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Config = __webpack_require__(1);
+
 	var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+
+	var TextControl = React.createClass({
+	    displayName: 'TextControl',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	                'p',
+	                null,
+	                this.props.value
+	            )
+	        );
+	    }
+	});
 
 	var Front = React.createClass({
 	    displayName: 'Front',
 
 	    getInitialState: function () {
-	        return { html: '' };
+	        return { controls: [], name: '' };
 	    },
 	    componentDidMount: function () {
 	        this.loadWidget();
@@ -62,32 +79,32 @@
 	    loadWidget: function () {
 	        // if there is a apiUrl call it and in callback render the widget
 	        // else just render the widget
+
 	        var widget = Config.Widgets[this.props.id];
-	        var content = '';
-	        if (widget.apiUrl) {
-	            // call api and set content using result
-	            $.ajax({
-	                url: widget.apiUrl,
-	                type: "GET",
-	                dataType: 'jsonp',
-	                cache: false,
-	                success: function (response) {
-	                    content = widget.render(response);
-	                    this.setState({ html: React.createElement(
-	                            'div',
-	                            null,
-	                            content
-	                        ) });
-	                }.bind(this)
-	            });
-	        } else {
-	            content = widget.render();
-	            this.setState({ html: React.createElement(
-	                    'div',
-	                    null,
-	                    content
-	                ) });
-	        }
+	        this.setState({ name: widget.name });
+
+	        widget.render(function (content) {
+
+	            var controls = [];
+
+	            if (typeof content === 'object' || typeof content === 'array') {
+
+	                content.map(function (data, i) {
+
+	                    var dataContent = data[widget.data.dataFieldName];
+
+	                    var control = { content: dataContent, type: widget.data.displayType };
+
+	                    controls.push(control);
+	                });
+	            } else {
+	                var control = { content: content, type: 'text' };
+
+	                controls.push(control);
+	            }
+
+	            this.setState({ controls: controls });
+	        }.bind(this));
 	    },
 	    reload: function () {
 	        var id = "widget_" + this.props.id;
@@ -118,8 +135,26 @@
 	            ),
 	            React.createElement(
 	                'div',
+	                null,
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    this.state.name
+	                )
+	            ),
+	            React.createElement(
+	                'div',
 	                { id: id },
-	                this.state.html
+	                this.state.controls.map(function (control, i) {
+	                    switch (control.displayType) {
+	                        case 'text':
+	                            return React.createElement(TextControl, { key: i, value: control.content });
+	                            break;
+
+	                        default:
+	                            return React.createElement(TextControl, { key: i, value: control.content });
+	                    }
+	                })
 	            )
 	        );
 	    }
@@ -210,15 +245,11 @@
 	    render: function () {
 	        return React.createElement(
 	            'div',
-	            { className: 'widget col-md-3 flipper-container horizontal', flipped: this.state.flipped },
+	            { className: 'widget col-md-3 flipper-container horizontal' },
 	            React.createElement(
 	                'div',
 	                { className: "flipper" + (this.state.flipped ? " flipped" : "") },
-	                React.createElement(
-	                    Front,
-	                    { setting: this.state.setting, edit: this.viewWidgetSetting, id: this.props.id },
-	                    'the front!'
-	                ),
+	                React.createElement(Front, { setting: this.state.setting, edit: this.viewWidgetSetting, id: this.props.id }),
 	                React.createElement(Back, { setting: this.state.setting, save: this.updateWidgetSetting, id: this.props.id })
 	            )
 	        );
@@ -229,9 +260,6 @@
 	    displayName: 'ControlPanel',
 
 	    handleClick: function (e) {
-	        // e.preventDefault();
-	        // var widgetName = ReactDOM.findDOMNode(this.refs.widgetName);
-	        // add widget to dashboard
 	        this.props.addWidget();
 	    },
 	    render: function () {
@@ -279,7 +307,7 @@
 	    displayName: 'Dashboard',
 
 	    getInitialState: function () {
-	        return { widgets: [] };
+	        return { widgets: Config.Widgets };
 	    },
 	    addWidget: function (widgetToAdd) {
 	        this.setState({ widgets: this.state.widgets.concat(widgetToAdd) });
@@ -309,11 +337,11 @@
 /***/ function(module, exports) {
 
 	exports.Widgets = [{
-	    name: "time",
+	    name: "TIME",
 	    apiUrl: "",
 	    style: {},
 	    interval: 60000,
-	    render: function () {
+	    render: function (callback) {
 	        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 	        var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 	        var d = new Date();
@@ -330,41 +358,27 @@
 
 	        var time = day + " " + hr + ":" + min + ampm + " " + date + " " + month + " " + year;
 
-	        return React.createElement(
-	            "div",
-	            { className: "text-center" },
-	            React.createElement(
-	                "h1",
-	                null,
-	                "Today"
-	            ),
-	            React.createElement(
-	                "h2",
-	                null,
-	                time
-	            )
-	        );
+	        callback(time);
 	    }
 	}, {
-	    name: "news",
+	    name: "NEWS",
 	    apiUrl: "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=nintex",
 	    style: { background: 'orange' },
-	    interval: 5000,
-	    render: function (data) {
-	        var news = data.responseData.results;
+	    interval: 10000,
+	    data: { dataFieldName: 'title', displayType: 'text' },
+	    render: function (callback) {
 
-	        return React.createElement(
-	            "div",
-	            { className: "text-center" },
-	            React.createElement(
-	                "b",
-	                null,
-	                "News"
-	            ),
-	            React.createElement("p", { dangerouslySetInnerHTML: { __html: news[0].title } }),
-	            React.createElement("p", { dangerouslySetInnerHTML: { __html: news[1].title } }),
-	            React.createElement("p", { dangerouslySetInnerHTML: { __html: news[3].title } })
-	        );
+	        $.ajax({
+	            url: "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=nintex",
+	            type: "GET",
+	            dataType: 'jsonp',
+	            cache: false,
+	            success: function (response) {
+	                var news = response.responseData.results;
+
+	                callback(news);
+	            }
+	        });
 	    }
 	}];
 

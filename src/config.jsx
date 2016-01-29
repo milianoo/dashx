@@ -1,9 +1,9 @@
 exports.Widgets = [{
-    name: "time",
+    name: "TIME",
     apiUrl: "",
     style: {},
     interval: 60000,
-    render: function() {
+    render: function(callback) {
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         var d = new Date();
@@ -20,24 +20,27 @@ exports.Widgets = [{
 
         var time = day + " " + hr + ":" + min + ampm + " " + date + " " + month + " " + year;
 
-        return (<div className="text-center">
-                    <h1>Today</h1>
-                    <h2>{time}</h2>
-                </div>);
+        callback(time);
     }
 },{
-    name: "news",
+    name: "NEWS",
     apiUrl: "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=nintex",
     style: {background: 'orange'},
-    interval: 5000,
-    render: function(data) {
-        var news = data.responseData.results;
+    interval: 10000,
+    data: {dataFieldName: 'title', displayType: 'text'},
+    render: function(callback) {
         
-        return (<div className="text-center">
-                    <b>News</b>
-                    <p dangerouslySetInnerHTML={{__html: news[0].title}}></p>
-                    <p dangerouslySetInnerHTML={{__html: news[1].title}}></p>
-                    <p dangerouslySetInnerHTML={{__html: news[3].title}}></p>
-                </div>);
+        $.ajax({
+                url: "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=nintex", 
+                type: "GET",   
+                dataType: 'jsonp',
+                cache: false,
+                success: function(response){                          
+                    var news = response.responseData.results;
+        
+                    callback(news);
+                }         
+            });
+        
     }
 } ];
