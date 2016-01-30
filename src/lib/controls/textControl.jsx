@@ -5,7 +5,7 @@ module.exports = React.createClass({
             this.timer = setInterval(this.changeText, 10000);
         }
         
-        return { text : this.props.data, currentIndex: 0};
+        return { currentIndex: 0};
     },
     changeText: function() {
         $('.text-news').addClass('animated fadeIn');
@@ -14,7 +14,7 @@ module.exports = React.createClass({
         });
         
         var index = 0;
-        if (this.state.currentIndex + 1 < this.state.text.length) {
+        if (this.state.currentIndex + 1 < this.props.data.length) {
             index = this.state.currentIndex + 1;
         }
         this.setState({currentIndex: index})
@@ -22,9 +22,9 @@ module.exports = React.createClass({
     render: function() {
         
         if (typeof this.props.data !== 'string'){
-            var text = this.state.text[this.state.currentIndex];
+            var text = this.props.data[this.state.currentIndex];
         }else{
-            var text = this.state.text;
+            var text = this.props.data;
         }
         
         return (<div className="text-news">

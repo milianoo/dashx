@@ -19,7 +19,7 @@ module.exports = React.createClass({
         this.setState({name: widget.name});
         // rendering widget data
         widget.render(function(data) {
-            
+            console.log(data);
             var newContent;
             switch (widget.type) {
                 case 'text':

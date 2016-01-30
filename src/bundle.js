@@ -126,8 +126,6 @@
 
 	                response.responseData.results.forEach(function (item) {
 
-	                    console.log(item);
-
 	                    news.push(item.title);
 	                });
 
@@ -142,7 +140,7 @@
 	    type: 'image',
 	    render: function (access_token, callback) {
 
-	        var access_token = '46880316.47f374f.ebd92575730a4b12bd9e3cd3298b3322';
+	        var access_token = '';
 	        var user = 'self';
 
 	        $.ajax({
@@ -242,7 +240,7 @@
 	        this.setState({ name: widget.name });
 	        // rendering widget data
 	        widget.render(function (data) {
-
+	            console.log(data);
 	            var newContent;
 	            switch (widget.type) {
 	                case 'text':
@@ -320,7 +318,7 @@
 	            this.timer = setInterval(this.changeText, 10000);
 	        }
 
-	        return { text: this.props.data, currentIndex: 0 };
+	        return { currentIndex: 0 };
 	    },
 	    changeText: function () {
 	        $('.text-news').addClass('animated fadeIn');
@@ -329,7 +327,7 @@
 	        });
 
 	        var index = 0;
-	        if (this.state.currentIndex + 1 < this.state.text.length) {
+	        if (this.state.currentIndex + 1 < this.props.data.length) {
 	            index = this.state.currentIndex + 1;
 	        }
 	        this.setState({ currentIndex: index });
@@ -337,9 +335,9 @@
 	    render: function () {
 
 	        if (typeof this.props.data !== 'string') {
-	            var text = this.state.text[this.state.currentIndex];
+	            var text = this.props.data[this.state.currentIndex];
 	        } else {
-	            var text = this.state.text;
+	            var text = this.props.data;
 	        }
 
 	        return React.createElement(
@@ -360,17 +358,18 @@
 	    getInitialState: function () {
 
 	        this.timer = setInterval(this.changeImage, 5000);
-	        return { images: this.props.data, currentIndex: 0 };
+	        return { currentIndex: 0 };
 	    },
 	    changeImage: function () {
 	        var index = 0;
-	        if (this.state.currentImageIndex + 1 <= this.state.images.length) {
+	        if (this.state.currentImageIndex + 1 <= this.props.data.length) {
 	            index = this.state.currentIndex + 1;
 	        }
 	        this.setState({ currentIndex: index });
 	    },
 	    render: function () {
-	        var imageUrl = this.state.images[this.state.currentIndex];
+
+	        var imageUrl = this.props.data[this.state.currentIndex];
 	        return React.createElement(
 	            "div",
 	            null,

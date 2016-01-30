@@ -40,9 +40,7 @@ exports.Widgets = [{
                     var news = [];
                     
                     response.responseData.results.forEach(function(item) {
-                        
-                        console.log(item);
-                        
+
                         news.push(item.title);
                     });
         
