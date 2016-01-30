@@ -1,6 +1,8 @@
 (function() {
     var bodyParser = require('body-parser'),
         express = require('express'),
+        querystring = require('querystring'),
+        http = require('https'),
         app = express();
         app.use(express.static(__dirname + '/src'));
 
