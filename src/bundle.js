@@ -191,7 +191,7 @@
 	    },
 	    updateWidgetSetting: function (setting) {
 	        this.setState({ setting: setting });
-	        this.viewWidgetSetting();
+	        this.flip();
 	    },
 	    viewWidgetSetting: function () {
 	        this.flip();
@@ -461,10 +461,74 @@
 /* 7 */
 /***/ function(module, exports) {
 
+	"use strict";
+
+	var Modal = React.createClass({
+	    displayName: "Modal",
+
+	    render: function () {
+	        return React.createElement(
+	            "div",
+	            null,
+	            React.createElement(
+	                "div",
+	                { id: "myModal", className: "modal fade", role: "dialog" },
+	                React.createElement(
+	                    "div",
+	                    { className: "modal-dialog" },
+	                    React.createElement(
+	                        "div",
+	                        { className: "modal-content" },
+	                        React.createElement(
+	                            "div",
+	                            { className: "modal-header" },
+	                            React.createElement(
+	                                "button",
+	                                { type: "button", className: "close", "data-dismiss": "modal" },
+	                                "×"
+	                            ),
+	                            React.createElement(
+	                                "h4",
+	                                { className: "modal-title" },
+	                                React.createElement("i", { className: "fa fa-plus-circle" }),
+	                                "Add New Widget"
+	                            )
+	                        ),
+	                        React.createElement(
+	                            "div",
+	                            { className: "modal-body" },
+	                            React.createElement(
+	                                "div",
+	                                { className: "form-group" },
+	                                React.createElement(
+	                                    "label",
+	                                    { "for": "exampleInputEmail1" },
+	                                    "Widget Name"
+	                                ),
+	                                React.createElement("input", { type: "text", className: "form-control", id: "inputName", placeholder: "Widget Name" })
+	                            )
+	                        ),
+	                        React.createElement(
+	                            "div",
+	                            { className: "modal-footer" },
+	                            React.createElement(
+	                                "button",
+	                                { type: "button", className: "btn btn-default", "data-dismiss": "modal" },
+	                                "Close"
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
 	module.exports = React.createClass({
 	    displayName: "exports",
 
 	    handleClick: function (e) {
+
 	        this.props.addWidget();
 	    },
 	    render: function () {
@@ -492,11 +556,12 @@
 	                        null,
 	                        React.createElement(
 	                            "a",
-	                            { href: "#", onClick: this.handleClick },
+	                            { href: "#", onClick: this.handleClick, "data-toggle": "modal", "data-target": "#myModal" },
 	                            React.createElement("i", { className: "fa fa-plus-circle" }),
 	                            " New Widget"
 	                        )
-	                    )
+	                    ),
+	                    React.createElement(Modal, null)
 	                ),
 	                React.createElement(
 	                    "div",

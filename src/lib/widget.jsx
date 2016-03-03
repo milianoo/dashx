@@ -18,7 +18,7 @@ module.exports = React.createClass({
     },
     updateWidgetSetting: function (setting){
         this.setState({setting: setting});
-        this.viewWidgetSetting();
+        this.flip();
     },
     viewWidgetSetting: function() {
         this.flip();
