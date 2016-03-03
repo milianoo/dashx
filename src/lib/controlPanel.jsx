@@ -30,7 +30,16 @@ module.exports = React.createClass({
                         <div className="form-group">
                             <label for="exampleInputEmail1">Widget Name</label>
                             <input type="text" className="form-control" id="inputName" placeholder="Widget Name"></input>
-                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label for="sel1">Widget to add</label>
+                          <select className="form-control" id="widgetType">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                          </select>
+                        </div>
                       </div>
                       <div className="modal-footer">
                         <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleClick}>Add</button>

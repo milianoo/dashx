@@ -40,12 +40,11 @@ Iteration 1
 Iteration 2
 ===========
 
-1. make dashboard dynamic to load using config file
-2. load widget data from api 
-3. load widget UI from template
-4. setup config file for each widget
+1. add widgets on-the-fly from the UI
+2. configure widget data source and display info
+3. configure OAuth for widgets if needed
+4. setup config/template for each widget
 5. enhance UI of widget 
-
 
 iteration 3
 ===========

@@ -467,7 +467,6 @@
 	  displayName: "exports",
 
 	  handleClick: function (e) {
-	    console.log(e);
 	    this.props.addWidget();
 	  },
 	  render: function () {
@@ -546,6 +545,39 @@
 	                    "Widget Name"
 	                  ),
 	                  React.createElement("input", { type: "text", className: "form-control", id: "inputName", placeholder: "Widget Name" })
+	                ),
+	                React.createElement(
+	                  "div",
+	                  { className: "form-group" },
+	                  React.createElement(
+	                    "label",
+	                    { "for": "sel1" },
+	                    "Widget to add"
+	                  ),
+	                  React.createElement(
+	                    "select",
+	                    { className: "form-control", id: "widgetType" },
+	                    React.createElement(
+	                      "option",
+	                      null,
+	                      "1"
+	                    ),
+	                    React.createElement(
+	                      "option",
+	                      null,
+	                      "2"
+	                    ),
+	                    React.createElement(
+	                      "option",
+	                      null,
+	                      "3"
+	                    ),
+	                    React.createElement(
+	                      "option",
+	                      null,
+	                      "4"
+	                    )
+	                  )
 	                )
 	              ),
 	              React.createElement(
