@@ -2,7 +2,14 @@
 
 var WidgetAddFrom = React.createClass({
   getInitialState: function() {
-        return {widgetName: '', widgetType: '', url: '', response: '', dataField: ''};
+        return {
+          widgetName: '',
+          widgetType: '',
+          url: '',
+          response: '',
+          dataField: '',
+          dataSourceAccepted: 'Not Yet'
+        };
   },
   handleNameChange: function(e){
     this.setState({widgetName: e.target.value});
@@ -11,26 +18,42 @@ var WidgetAddFrom = React.createClass({
     this.setState({widgetType: e.target.value});
   },
   handleDataFieldChange: function(e){
+    
+    // TODO: onChange call ajax request again.
+    
     this.setState({dataField: e.target.value});
   },
   handleUrlChange: function(e){
-    this.setState({url: e.target.value});
-    
-    $.ajax({
-        url: this.state.url, 
-        type: "GET",   
-        dataType: 'jsonp',
-        cache: false,
-        success: function(response){ 
-            
-            // TODO: set one data source as array + field names to display 
-            
-            var result = eval("response.responseData." + this.state.dataField);
-            this.setState({response: JSON.stringify(result, null, 4)});
-        }.bind(this),
-        error: function (xhr, ajaxOptions, thrownError) {
-            this.setState({response: thrownError});
-        }.bind(this)
+    this.setState({url: e.target.value}, function() {
+        $.ajax({
+          url: this.state.url, 
+          type: "GET",   
+          dataType: 'jsonp',
+          cache: false,
+          success: function(response){ 
+              var result;
+              // TODO: set one data source as array + field names to display 
+              if (this.state.dataField){
+                result = eval("response.responseData." + this.state.dataField);
+              }else{
+                result = response.responseData;
+              }
+              console.log($.isArray(result));
+              if ($.isArray(result)) {
+                this.setState({dataSourceAccepted: 'Yes! Found ' + result.length + ' items.'});
+                for (var fieldsToDisplay in result[0]) {
+                  
+                  // TODO : ability to select fields to display
+                  console.log(fieldsToDisplay);
+                }
+              }
+              
+              this.setState({response: JSON.stringify(result, null, 4)});
+          }.bind(this),
+          error: function (xhr, ajaxOptions, thrownError) {
+              this.setState({response: thrownError});
+          }.bind(this)
+        });
     });
   },
   handleSubmit: function() {
@@ -63,11 +86,19 @@ var WidgetAddFrom = React.createClass({
                     <option>Instagram</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <input type="text" className="form-control" placeholder="Data Source URL" onChange={this.handleUrlChange}></input>
-                  <input type="text" className="form-control" placeholder="Data Field" onChange={this.handleDataFieldChange}></input>
+                <hr/>
+                <div className="form-group row">
+                  <div className="col-md-6">
+                    <label>HTTP GET Request URL</label>
+                    <input type="text" className="form-control" placeholder="Data Source URL" onChange={this.handleUrlChange}></input>
+                  </div>
+                  <div className="col-md-6">
+                    <label>JSON Data Field Name</label>
+                    <input type="text" className="form-control" placeholder="Data Field" onChange={this.handleDataFieldChange}></input>
+                  </div>
                 </div>
                 <div className="form-group">
+                  <label>Data Source Provided : {this.state.dataSourceAccepted}</label>
                   <textarea className="form-control" value={this.state.response} ></textarea>
                 </div>
               </form>
