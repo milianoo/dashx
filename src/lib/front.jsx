@@ -15,7 +15,7 @@ module.exports = React.createClass({
     },
     loadWidget: function() {
 
-        var widget = Config.Widgets[this.props.id];
+        var widget = this.props.setting;
         this.setState({name: widget.name});
         // rendering widget data
         widget.render(function(data) {

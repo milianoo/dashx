@@ -1,8 +1,61 @@
 "use strict"
-module.exports = React.createClass({
 
-    handleClick: function(e) {
-        this.props.addWidget();
+var WidgetAddFrom = React.createClass({
+  getInitialState: function() {
+        return {widgetName: '', widgetType: ''};
+  },
+  handleNameChange: function(e){
+    this.setState({widgetName: e.target.value});
+  },
+  handleWidgetTypeChange: function(e){
+    this.setState({widgetType: e.target.value});
+  },
+  handleSubmit: function() {
+    if (this.state.widgetName.length > 0 && this.state.widgetType.length > 0){
+
+       // add new widget
+       this.props.onSubmit({name: this.state.widgetName, type: this.state.widgetType});
+    }
+  },
+  render: function() {
+    return (
+      <div id="myModal" className="modal fade" role="dialog">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal">&times;</button>
+              <h4 className="modal-title"><i className="fa fa-plus-circle"></i> New Widget</h4>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                  <label>Widget Name</label>
+                  <input type="text" className="form-control" placeholder="Widget Name" onChange={this.handleNameChange}></input>
+              </div>
+              <form className="widgetAddForm">
+                <div className="form-group">
+                  <label>Widget to add</label>
+                  <select className="form-control" id="widgetType" onChange={this.handleWidgetTypeChange}>
+                    <option>Time</option>
+                    <option>News</option>
+                    <option>Instagram</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleSubmit}>Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      );
+    
+  }
+});
+
+module.exports = React.createClass({
+    addNewWidget: function(widget) {
+        this.props.addWidget(widget);
     },
     render: function() {
         return (
@@ -16,37 +69,8 @@ module.exports = React.createClass({
                   </ul>
                   <div id="signature">By Milad Rezazadeh</div>
                 </div>
-                
                 <div>
-                    <div id="myModal" className="modal fade" role="dialog">
-                  <div className="modal-dialog">
-                
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
-                        <h4 className="modal-title"><i className="fa fa-plus-circle"></i> New Widget</h4>
-                      </div>
-                      <div className="modal-body">
-                        <div className="form-group">
-                            <label for="exampleInputEmail1">Widget Name</label>
-                            <input type="text" className="form-control" id="inputName" placeholder="Widget Name"></input>
-                        </div>
-                        <div className="form-group">
-                          <label for="sel1">Widget to add</label>
-                          <select className="form-control" id="widgetType">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleClick}>Add</button>
-                      </div>
-                    </div>
-                      </div>
-                    </div>
+                    <WidgetAddFrom onSubmit={this.addNewWidget} />
                 </div>
             </nav>
             

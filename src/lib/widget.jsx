@@ -3,17 +3,10 @@ var Front = require("./front.jsx");
 var Back = require("./back.jsx");
 
 module.exports = React.createClass({
-    
     getInitialState: function() {
-        var widget = Config.Widgets[this.props.id];
-        var setting = {
-            style: widget.style,
-            interval: widget.interval
-        }
-        
         return {
             flipped: false,
-            setting : setting
+            setting : this.props.config
         };
     },
     updateWidgetSetting: function (setting){

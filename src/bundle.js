@@ -54,10 +54,21 @@
 	    displayName: "Dashboard",
 
 	    getInitialState: function () {
-	        return { widgets: Config.Widgets };
+	        return { widgets: [] };
 	    },
-	    addWidget: function (widgetToAdd) {
-	        this.setState({ widgets: this.state.widgets.concat(widgetToAdd) });
+	    addWidget: function (widget) {
+	        var widgetConfig = {};
+	        switch (widget.type.toLowerCase()) {
+	            case "time":
+	                widgetConfig = Config.Widgets[0];break;
+	            case "news":
+	                widgetConfig = Config.Widgets[1];break;
+	            case "instagram":
+	                widgetConfig = Config.Widgets[2];break;
+	            default:
+	                widgetConfig = {};
+	        }
+	        this.setState({ widgets: this.state.widgets.concat(widgetConfig) });
 	    },
 	    render: function () {
 	        var index = 0;
@@ -68,8 +79,8 @@
 	            React.createElement(
 	                "div",
 	                { id: "widgets", className: "row" },
-	                this.state.widgets.map(function (widget, i) {
-	                    return React.createElement(Widget, { key: i, id: i, name: widget });
+	                this.state.widgets.map(function (widgetConfig, i) {
+	                    return React.createElement(Widget, { key: i, id: i, config: widgetConfig });
 	                })
 	            )
 	        );
@@ -178,15 +189,9 @@
 	    displayName: "exports",
 
 	    getInitialState: function () {
-	        var widget = Config.Widgets[this.props.id];
-	        var setting = {
-	            style: widget.style,
-	            interval: widget.interval
-	        };
-
 	        return {
 	            flipped: false,
-	            setting: setting
+	            setting: this.props.config
 	        };
 	    },
 	    updateWidgetSetting: function (setting) {
@@ -236,7 +241,7 @@
 	    },
 	    loadWidget: function () {
 
-	        var widget = Config.Widgets[this.props.id];
+	        var widget = this.props.setting;
 	        this.setState({ name: widget.name });
 	        // rendering widget data
 	        widget.render(function (data) {
@@ -388,7 +393,7 @@
 	    displayName: "exports",
 
 	    getInitialState: function () {
-	        var widget = Config.Widgets[this.props.id];
+	        var widget = this.props.setting;
 	        return {
 	            widget: widget
 	        };
@@ -463,135 +468,158 @@
 
 	"use strict";
 
-	module.exports = React.createClass({
-	  displayName: "exports",
+	var WidgetAddFrom = React.createClass({
+	  displayName: 'WidgetAddFrom',
 
-	  handleClick: function (e) {
-	    this.props.addWidget();
+	  getInitialState: function () {
+	    return { widgetName: '', widgetType: '' };
+	  },
+	  handleNameChange: function (e) {
+	    this.setState({ widgetName: e.target.value });
+	  },
+	  handleWidgetTypeChange: function (e) {
+	    this.setState({ widgetType: e.target.value });
+	  },
+	  handleSubmit: function () {
+	    if (this.state.widgetName.length > 0 && this.state.widgetType.length > 0) {
+
+	      // add new widget
+	      this.props.onSubmit({ name: this.state.widgetName, type: this.state.widgetType });
+	    }
 	  },
 	  render: function () {
 	    return React.createElement(
-	      "nav",
-	      { className: "navbar navbar-inverse navbar-fixed-top" },
+	      'div',
+	      { id: 'myModal', className: 'modal fade', role: 'dialog' },
 	      React.createElement(
-	        "div",
-	        { className: "navbar-header" },
+	        'div',
+	        { className: 'modal-dialog' },
 	        React.createElement(
-	          "a",
-	          { className: "navbar-brand", href: "#" },
-	          React.createElement("i", { className: "fa fa-tachometer" }),
-	          " DashX"
+	          'div',
+	          { className: 'modal-content' },
+	          React.createElement(
+	            'div',
+	            { className: 'modal-header' },
+	            React.createElement(
+	              'button',
+	              { type: 'button', className: 'close', 'data-dismiss': 'modal' },
+	              '×'
+	            ),
+	            React.createElement(
+	              'h4',
+	              { className: 'modal-title' },
+	              React.createElement('i', { className: 'fa fa-plus-circle' }),
+	              ' New Widget'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'modal-body' },
+	            React.createElement(
+	              'div',
+	              { className: 'form-group' },
+	              React.createElement(
+	                'label',
+	                null,
+	                'Widget Name'
+	              ),
+	              React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Widget Name', onChange: this.handleNameChange })
+	            ),
+	            React.createElement(
+	              'form',
+	              { className: 'widgetAddForm' },
+	              React.createElement(
+	                'div',
+	                { className: 'form-group' },
+	                React.createElement(
+	                  'label',
+	                  null,
+	                  'Widget to add'
+	                ),
+	                React.createElement(
+	                  'select',
+	                  { className: 'form-control', id: 'widgetType', onChange: this.handleWidgetTypeChange },
+	                  React.createElement(
+	                    'option',
+	                    null,
+	                    'Time'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    null,
+	                    'News'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    null,
+	                    'Instagram'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'modal-footer' },
+	            React.createElement(
+	              'button',
+	              { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal', onClick: this.handleSubmit },
+	              'Add'
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = React.createClass({
+	  displayName: 'exports',
+
+	  addNewWidget: function (widget) {
+	    this.props.addWidget(widget);
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'nav',
+	      { className: 'navbar navbar-inverse navbar-fixed-top' },
+	      React.createElement(
+	        'div',
+	        { className: 'navbar-header' },
+	        React.createElement(
+	          'a',
+	          { className: 'navbar-brand', href: '#' },
+	          React.createElement('i', { className: 'fa fa-tachometer' }),
+	          ' DashX'
 	        )
 	      ),
 	      React.createElement(
-	        "div",
-	        { className: "collapse navbar-collapse" },
+	        'div',
+	        { className: 'collapse navbar-collapse' },
 	        React.createElement(
-	          "ul",
-	          { className: "nav navbar-nav" },
+	          'ul',
+	          { className: 'nav navbar-nav' },
 	          React.createElement(
-	            "li",
+	            'li',
 	            null,
 	            React.createElement(
-	              "a",
-	              { href: "#", "data-toggle": "modal", "data-target": "#myModal" },
-	              React.createElement("i", { className: "fa fa-plus-circle" }),
-	              " New Widget"
+	              'a',
+	              { href: '#', 'data-toggle': 'modal', 'data-target': '#myModal' },
+	              React.createElement('i', { className: 'fa fa-plus-circle' }),
+	              ' New Widget'
 	            )
 	          )
 	        ),
 	        React.createElement(
-	          "div",
-	          { id: "signature" },
-	          "By Milad Rezazadeh"
+	          'div',
+	          { id: 'signature' },
+	          'By Milad Rezazadeh'
 	        )
 	      ),
 	      React.createElement(
-	        "div",
+	        'div',
 	        null,
-	        React.createElement(
-	          "div",
-	          { id: "myModal", className: "modal fade", role: "dialog" },
-	          React.createElement(
-	            "div",
-	            { className: "modal-dialog" },
-	            React.createElement(
-	              "div",
-	              { className: "modal-content" },
-	              React.createElement(
-	                "div",
-	                { className: "modal-header" },
-	                React.createElement(
-	                  "button",
-	                  { type: "button", className: "close", "data-dismiss": "modal" },
-	                  "×"
-	                ),
-	                React.createElement(
-	                  "h4",
-	                  { className: "modal-title" },
-	                  React.createElement("i", { className: "fa fa-plus-circle" }),
-	                  " New Widget"
-	                )
-	              ),
-	              React.createElement(
-	                "div",
-	                { className: "modal-body" },
-	                React.createElement(
-	                  "div",
-	                  { className: "form-group" },
-	                  React.createElement(
-	                    "label",
-	                    { "for": "exampleInputEmail1" },
-	                    "Widget Name"
-	                  ),
-	                  React.createElement("input", { type: "text", className: "form-control", id: "inputName", placeholder: "Widget Name" })
-	                ),
-	                React.createElement(
-	                  "div",
-	                  { className: "form-group" },
-	                  React.createElement(
-	                    "label",
-	                    { "for": "sel1" },
-	                    "Widget to add"
-	                  ),
-	                  React.createElement(
-	                    "select",
-	                    { className: "form-control", id: "widgetType" },
-	                    React.createElement(
-	                      "option",
-	                      null,
-	                      "1"
-	                    ),
-	                    React.createElement(
-	                      "option",
-	                      null,
-	                      "2"
-	                    ),
-	                    React.createElement(
-	                      "option",
-	                      null,
-	                      "3"
-	                    ),
-	                    React.createElement(
-	                      "option",
-	                      null,
-	                      "4"
-	                    )
-	                  )
-	                )
-	              ),
-	              React.createElement(
-	                "div",
-	                { className: "modal-footer" },
-	                React.createElement(
-	                  "button",
-	                  { type: "button", className: "btn btn-default", "data-dismiss": "modal", onClick: this.handleClick },
-	                  "Add"
-	                )
-	              )
-	            )
-	          )
-	        )
+	        React.createElement(WidgetAddFrom, { onSubmit: this.addNewWidget })
 	      )
 	    );
 	  }

@@ -2,7 +2,7 @@ var Config = require("../config.jsx");
 
 module.exports = React.createClass({
      getInitialState: function() {
-        var widget = Config.Widgets[this.props.id];
+        var widget = this.props.setting;
         return {
             widget: widget
         };

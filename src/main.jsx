@@ -6,10 +6,17 @@ var ControlPanel = require("./lib/controlPanel.jsx");
 
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {widgets: Config.Widgets};
+        return {widgets: []};
     },
-    addWidget: function(widgetToAdd) {
-        this.setState({widgets: this.state.widgets.concat(widgetToAdd)});
+    addWidget: function(widget) {
+        var widgetConfig = {};
+        switch (widget.type.toLowerCase()) {
+          case "time": widgetConfig = Config.Widgets[0]; break;
+          case "news": widgetConfig = Config.Widgets[1]; break;
+          case "instagram":  widgetConfig = Config.Widgets[2]; break;
+          default: widgetConfig = {};
+        }
+        this.setState({widgets: this.state.widgets.concat(widgetConfig)});
     },
     render: function() {
         var index = 0;
@@ -17,8 +24,8 @@ var Dashboard = React.createClass({
         <div id="dashboard">
             <ControlPanel addWidget={this.addWidget} />
             <div id="widgets" className="row">
-            {this.state.widgets.map(function(widget, i) {
-                return <Widget key={i} id={i} name={widget} />;
+            {this.state.widgets.map(function(widgetConfig, i) {
+                return <Widget key={i} id={i} config={widgetConfig} />;
             })}
             </div>
         </div>
