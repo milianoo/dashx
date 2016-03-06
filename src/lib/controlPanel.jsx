@@ -2,13 +2,36 @@
 
 var WidgetAddFrom = React.createClass({
   getInitialState: function() {
-        return {widgetName: '', widgetType: ''};
+        return {widgetName: '', widgetType: '', url: '', response: '', dataField: ''};
   },
   handleNameChange: function(e){
     this.setState({widgetName: e.target.value});
   },
   handleWidgetTypeChange: function(e){
     this.setState({widgetType: e.target.value});
+  },
+  handleDataFieldChange: function(e){
+    this.setState({dataField: e.target.value});
+  },
+  handleUrlChange: function(e){
+    this.setState({url: e.target.value});
+    
+    $.ajax({
+        url: this.state.url, 
+        type: "GET",   
+        dataType: 'jsonp',
+        cache: false,
+        success: function(response){ 
+            
+            // TODO: set one data source as array + field names to display 
+            
+            var result = eval("response.responseData." + this.state.dataField);
+            this.setState({response: JSON.stringify(result, null, 4)});
+        }.bind(this),
+        error: function (xhr, ajaxOptions, thrownError) {
+            this.setState({response: thrownError});
+        }.bind(this)
+    });
   },
   handleSubmit: function() {
     if (this.state.widgetName.length > 0 && this.state.widgetType.length > 0){
@@ -39,6 +62,13 @@ var WidgetAddFrom = React.createClass({
                     <option>News</option>
                     <option>Instagram</option>
                   </select>
+                </div>
+                <div className="form-group">
+                  <input type="text" className="form-control" placeholder="Data Source URL" onChange={this.handleUrlChange}></input>
+                  <input type="text" className="form-control" placeholder="Data Field" onChange={this.handleDataFieldChange}></input>
+                </div>
+                <div className="form-group">
+                  <textarea className="form-control" value={this.state.response} ></textarea>
                 </div>
               </form>
             </div>

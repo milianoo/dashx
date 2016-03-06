@@ -472,13 +472,34 @@
 	  displayName: 'WidgetAddFrom',
 
 	  getInitialState: function () {
-	    return { widgetName: '', widgetType: '' };
+	    return { widgetName: '', widgetType: '', url: '', response: '', dataField: '' };
 	  },
 	  handleNameChange: function (e) {
 	    this.setState({ widgetName: e.target.value });
 	  },
 	  handleWidgetTypeChange: function (e) {
 	    this.setState({ widgetType: e.target.value });
+	  },
+	  handleDataFieldChange: function (e) {
+	    this.setState({ dataField: e.target.value });
+	  },
+	  handleUrlChange: function (e) {
+	    this.setState({ url: e.target.value });
+
+	    $.ajax({
+	      url: this.state.url,
+	      type: "GET",
+	      dataType: 'jsonp',
+	      cache: false,
+	      success: function (response) {
+	        console.log(eval("response.responseData.results[0].title"));
+	        var result = eval("response.responseData." + this.state.dataField);
+	        this.setState({ response: JSON.stringify(result, null, 4) });
+	      }.bind(this),
+	      error: function (xhr, ajaxOptions, thrownError) {
+	        this.setState({ response: thrownError });
+	      }.bind(this)
+	    });
 	  },
 	  handleSubmit: function () {
 	    if (this.state.widgetName.length > 0 && this.state.widgetType.length > 0) {
@@ -555,6 +576,17 @@
 	                    'Instagram'
 	                  )
 	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'form-group' },
+	                React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Data Source URL', onChange: this.handleUrlChange }),
+	                React.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Data Field', onChange: this.handleDataFieldChange })
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'form-group' },
+	                React.createElement('textarea', { className: 'form-control', value: this.state.response })
 	              )
 	            )
 	          ),

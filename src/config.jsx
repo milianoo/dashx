@@ -45,7 +45,7 @@ exports.Widgets = [{
                     });
         
                     callback(news);
-                }         
+                }      
             });
         
     }
